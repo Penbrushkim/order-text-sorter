@@ -105,11 +105,11 @@ pre.out {
   <div class="top">
     <div>
       <h1>주문 텍스트 정렬기</h1>
-      <p class="sub">붙여넣은 주문 내용을 전표 형식으로 바꿉니다. 함량별로 창이 나뉘어 있습니다. 예시 텍스트가 들어 있으니 지우고 사용하세요.</p>
+      <p class="sub">붙여넣은 주문 내용을 전표 형식으로 바꿉니다. 함량별로 창이 나뉘어 있습니다.</p>
     </div>
     <div class="top-r">
       <button class="btn" type="button" id="themeBtn">다크모드</button>
-      <span class="ver">V1.1</span>
+      <span class="ver">V1.2</span>
     </div>
   </div>
   <div class="tabs" role="tablist" id="tabs"></div>
@@ -118,11 +118,7 @@ pre.out {
 
 <script>
 (function () {
-  var SAMPLES = {
-    K14: "MC512R\nK14 3.18g\n150-064\nNE330B\nK14 4.02g\n180-091",
-    K18: "MB789B\nK18 6.46g\n220-172\nBV-B7N민\nK18 6.27g\n400-167\n081R43\nK18 2.59g\n140-069",
-    K24: "레이나 MRC7025B스피넬\n160-050\n크라이스 SL1540-1\n140-100\n[K18 장식별도▷0.12돈]"
-  };
+  var SAMPLES = { K14: "", K18: "", K24: "" };
   var WINDOWS = [
     { id: "K24", label: "K24 (순금)", karat: "K24" },
     { id: "K18", label: "K18", karat: "K18" },
