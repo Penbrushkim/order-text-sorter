@@ -352,25 +352,37 @@ pre.out {
     btn.textContent = msg; btn.classList.add("ok");
     setTimeout(function () { btn.textContent = "복사하기"; btn.classList.remove("ok"); }, 1400);
   }
+  // 복사: 일반 텍스트 + 고정폭(모노스페이스) 서식 HTML을 함께 담아, 붙여넣는 곳에서도 열이 맞게 한다.
+  var MONO = "'Nanum Gothic Coding','D2Coding','Consolas','Courier New',monospace";
   function copy(w, btn) {
     var txt = compose(w);
     if (!txt) { flash(btn, "복사할 내용이 없습니다"); return; }
-    function fallback() {
-      var ta = document.createElement("textarea");
-      ta.value = txt; ta.style.position = "fixed"; ta.style.opacity = "0";
-      document.body.appendChild(ta); ta.select();
+    var html = '<pre style="font-family:' + MONO + ';white-space:pre;margin:0">' + esc(txt) + '</pre>';
+    function rich() {
+      var d = document.createElement("div");
+      d.style.cssText = "position:fixed;left:-9999px;top:0;white-space:pre;font-family:" + MONO;
+      d.textContent = txt;
+      document.body.appendChild(d);
+      var r = document.createRange(); r.selectNodeContents(d);
+      var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
       var ok = false; try { ok = document.execCommand("copy"); } catch (e) {}
-      document.body.removeChild(ta);
-      if (ok) { flash(btn, "복사됨"); }
-      else {
-        var r = document.createRange(); r.selectNodeContents(document.getElementById("out-" + w.id));
-        var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
-        flash(btn, "선택됨 · Ctrl/⌘+C");
-      }
+      sel.removeAllRanges(); document.body.removeChild(d);
+      if (ok) { flash(btn, "복사됨"); return; }
+      var r2 = document.createRange(); r2.selectNodeContents(document.getElementById("out-" + w.id));
+      sel.removeAllRanges(); sel.addRange(r2);
+      flash(btn, "선택됨 · Ctrl/⌘+C");
     }
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(txt).then(function () { flash(btn, "복사됨"); }, fallback);
-    } else { fallback(); }
+    if (navigator.clipboard && window.ClipboardItem && navigator.clipboard.write) {
+      try {
+        var item = new ClipboardItem({
+          "text/plain": new Blob([txt], { type: "text/plain" }),
+          "text/html": new Blob([html], { type: "text/html" })
+        });
+        navigator.clipboard.write([item]).then(function () { flash(btn, "복사됨"); }, rich);
+        return;
+      } catch (e) {}
+    }
+    rich();
   }
 
   var root = document.documentElement, themeBtn = document.getElementById("themeBtn");
