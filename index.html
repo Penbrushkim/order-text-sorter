@@ -109,7 +109,7 @@ pre.out {
     </div>
     <div class="top-r">
       <button class="btn" type="button" id="themeBtn">다크모드</button>
-      <span class="ver">V1.2</span>
+      <span class="ver">V1.3</span>
     </div>
   </div>
   <div class="tabs" role="tablist" id="tabs"></div>
@@ -180,8 +180,16 @@ pre.out {
     var sel = s.items.filter(function (it) { return it.checked; });
     if (!sel.length) return "";
     var per = s.perRow, groups = [];
-    for (var i = 0; i < sel.length; i += per) {
-      var chunk = sel.slice(i, i + per), t = [], b = [];
+    // 간단 항목은 개수에 포함하지 않고 현재 줄 옆에 붙인다. 일반 항목만 '한 줄에 N개'로 줄을 나눈다.
+    var chunks = [], cur = [], normal = 0;
+    sel.forEach(function (it) {
+      if (!it.simple && normal >= per) { chunks.push(cur); cur = []; normal = 0; }
+      cur.push(it);
+      if (!it.simple) normal++;
+    });
+    if (cur.length) chunks.push(cur);
+    for (var i = 0; i < chunks.length; i++) {
+      var chunk = chunks[i], t = [], b = [];
       chunk.forEach(function (it) {
         var c = cells(w, it);
         var W = Math.max(cw(c.top[0]) + cw(c.top[1]), cw(c.bottom[0]) + cw(c.bottom[1])) + 2;
