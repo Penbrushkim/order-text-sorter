@@ -109,7 +109,7 @@ pre.out {
     </div>
     <div class="top-r">
       <button class="btn" type="button" id="themeBtn">다크모드</button>
-      <span class="ver">V1.3</span>
+      <span class="ver">V1.4</span>
     </div>
   </div>
   <div class="tabs" role="tablist" id="tabs"></div>
@@ -141,7 +141,16 @@ pre.out {
       if (!m || i === 0) continue;
       if ("K" + m[1] !== karat) { skipped++; continue; }
       var sg = lines[i + 1] && /^\d+\s*-\s*\d+$/.test(lines[i + 1]) ? normSg(lines[i + 1]) : "";
-      items.push({ model: lines[i - 1], sg: sg, weight: m[2] });
+      var it = { model: lines[i - 1], sg: sg, weight: m[2], partner: "", price: "" };
+      // 4줄 형식: 첫 줄 = 'B7- 디바스B260 | 디바스' → 앞의 영문/숫자 = 거래처(B7), '|' 바로 앞 숫자 = 입고가(260)
+      var h = i >= 2 ? lines[i - 2] : "";
+      if (h && !/^K\s?(14|18|24)\s*[\d.]+\s*g?$/i.test(h) && !/^\d+\s*-\s*\d+$/.test(h)) {
+        var pm = h.match(/^[A-Z0-9]+/);
+        if (pm) it.partner = pm[0];
+        var bar = h.indexOf("|");
+        if (bar >= 0) { var pr = h.slice(0, bar).match(/(\d+(?:\.\d+)?)\s*$/); if (pr) it.price = pr[1]; }
+      }
+      items.push(it);
     }
     return { items: items, skipped: skipped };
   }
@@ -226,7 +235,9 @@ pre.out {
       it.simple = prev ? prev.simple : false;
       it.partner = prev && prev.partner !== prev.srcPartner ? prev.partner : sp0;
       it.srcPartner = sp0;
-      it.price = prev ? prev.price : "";
+      var spr = it.price || "";
+      it.price = prev && prev.price !== prev.srcPrice ? prev.price : spr;
+      it.srcPrice = spr;
       if (prev) {
         if (prev.weight !== undefined && prev.weight !== prev.srcWeight) it.weight = prev.weight;
         if (prev.deco !== undefined && prev.deco !== prev.srcDeco) it.deco = prev.deco;
