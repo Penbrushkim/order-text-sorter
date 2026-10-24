@@ -293,7 +293,7 @@ pre.out {
 
   function build() {
     var tabs = document.getElementById("tabs"), panels = document.getElementById("panels");
-    WINDOWS.forEach(function (w) { state[w.id] = { text: SAMPLES[w.id], items: [], skipped: 0, perRow: 3 }; });
+    WINDOWS.forEach(function (w) { state[w.id] = { text: SAMPLES[w.id], items: [], skipped: 0, perRow: Infinity }; });
     WINDOWS.forEach(function (w, idx) {
       var b = document.createElement("button");
       b.className = "tab"; b.type = "button"; b.setAttribute("role", "tab"); b.id = "tab-" + w.id;
@@ -312,7 +312,7 @@ pre.out {
         '</div>' +
         '<div class="box">' +
           '<h2>미리보기</h2>' +
-          '<div class="row-tools"><label class="opt">한 줄에 <select id="per-' + w.id + '"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option></select> 개</label></div>' +
+          '<div class="row-tools"><label class="opt">한 줄에 <select id="per-' + w.id + '"><option value="0" selected>전체</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select> 개</label></div>' +
           '<pre class="out" id="out-' + w.id + '"></pre>' +
           '<div class="row-tools"><button class="btn primary" type="button" id="copy-' + w.id + '">복사하기</button></div>' +
         '</div>' +
@@ -326,7 +326,7 @@ pre.out {
       var src = p.querySelector("#src-" + w.id);
       src.addEventListener("input", function () { state[w.id].text = src.value; reparse(w); });
       p.querySelector('[data-clear]').addEventListener("click", function () { src.value = ""; state[w.id].text = ""; reparse(w); src.focus(); });
-      p.querySelector("#per-" + w.id).addEventListener("change", function (e) { state[w.id].perRow = +e.target.value; updatePreview(w); });
+      p.querySelector("#per-" + w.id).addEventListener("change", function (e) { state[w.id].perRow = +e.target.value || Infinity; updatePreview(w); });
       p.querySelector("#all-" + w.id).addEventListener("change", function (e) {
         state[w.id].items.forEach(function (it) { it.checked = e.target.checked; });
         renderItems(w); updatePreview(w); updateCounts();
