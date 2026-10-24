@@ -184,9 +184,10 @@ pre.out {
     if (it.simple) return { top: [it.sg, ""], bottom: [it.partner + ".", ""] };
     if (w.karat === "K24") {
       var hasDeco = it.deco !== "";
+      var szv = (it.size || "").replace(/^#+/, ""), szTag = szv ? ".#" + szv : "";
       return {
         top: [it.model, it.sg],
-        bottom: hasDeco ? [it.partner + ".K24", "장식" + it.deco] : [it.partner + ".", "K24"]
+        bottom: hasDeco ? [it.partner + ".K24" + szTag, "장식" + it.deco] : [it.partner + ".", "K24" + szTag]
       };
     }
     var sz = (it.size || "").replace(/^#+/, "");
@@ -275,7 +276,8 @@ pre.out {
     box.innerHTML = s.items.map(function (it, i) {
       var fields = w.karat === "K24"
         ? '<label>거래처<input data-f="partner" data-i="' + i + '" value="' + esc(it.partner) + '" autocomplete="off"></label>' +
-          '<label>장식중량 (비우면 없음)<input data-f="deco" data-i="' + i + '" value="' + esc(it.deco) + '" inputmode="decimal" autocomplete="off"></label>'
+          '<label>장식중량 (비우면 없음)<input data-f="deco" data-i="' + i + '" value="' + esc(it.deco) + '" inputmode="decimal" autocomplete="off"></label>' +
+          '<label>size<input data-f="size" data-i="' + i + '" value="' + esc(it.size || "") + '" autocomplete="off"></label>'
         : '<label>거래처<input data-f="partner" data-i="' + i + '" value="' + esc(it.partner) + '" autocomplete="off"></label>' +
           '<label>입고가<input data-f="price" data-i="' + i + '" value="' + esc(it.price) + '" inputmode="decimal" autocomplete="off"></label>' +
           '<label>중량 g<input data-f="weight" data-i="' + i + '" value="' + esc(it.weight) + '" inputmode="decimal" autocomplete="off"></label>' +
