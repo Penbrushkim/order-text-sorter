@@ -109,7 +109,7 @@ pre.out {
     </div>
     <div class="top-r">
       <button class="btn" type="button" id="themeBtn">다크모드</button>
-      <span class="ver">V1.4</span>
+      <span class="ver">V1.5</span>
     </div>
   </div>
   <div class="tabs" role="tablist" id="tabs"></div>
@@ -132,6 +132,14 @@ pre.out {
   function cw(s) { var w = 0; for (var i = 0; i < s.length; i++) { w += s.charCodeAt(i) > 0x2e7f ? 2 : 1; } return w; }
   function sp(n) { return n > 0 ? new Array(n + 1).join(" ") : ""; }
   function normSg(s) { return s.replace(/\s*-\s*/, "-"); }
+  // 중량(g)을 수정하면 수공-중량의 '중량'을 다시 계산한다: g ÷ 3.75 = 돈 → 소수 둘째 자리 반올림 → 3자리 표기 (2.53g → 0.67돈 → 067, 3.75g → 1돈 → 100)
+  function toDon3(g) { return ("00" + Math.round(g / 3.75 * 100)).slice(-Math.max(3, String(Math.round(g / 3.75 * 100)).length)); }
+  function applyWeight(it) {
+    var g = parseFloat(it.weight);
+    if (!it.srcSg || !(g > 0) || it.weight === it.srcWeight) { it.sg = it.srcSg; return; }
+    var su = it.srcSg.split("-")[0];
+    it.sg = su + "-" + toDon3(g);
+  }
 
   function parseGold(text, karat) {
     var lines = text.split(/\r?\n/).map(function (l) { return l.trim(); }).filter(Boolean);
@@ -243,6 +251,8 @@ pre.out {
         if (prev.deco !== undefined && prev.deco !== prev.srcDeco) it.deco = prev.deco;
       }
       it.srcWeight = sw; it.srcDeco = sd;
+      it.srcSg = it.sg;
+      applyWeight(it);
       return it;
     });
     s.skipped = r.skipped;
@@ -319,7 +329,13 @@ pre.out {
       var items = p.querySelector("#items-" + w.id);
       items.addEventListener("input", function (e) {
         var t = e.target; if (!t.dataset.f) return;
-        state[w.id].items[+t.dataset.i][t.dataset.f] = t.value.trim();
+        var cur = state[w.id].items[+t.dataset.i];
+        cur[t.dataset.f] = t.value.trim();
+        if (t.dataset.f === "weight") {
+          applyWeight(cur);
+          var mt = document.querySelector("#item-" + w.id + "-" + t.dataset.i + " .meta");
+          if (mt) mt.textContent = w.karat + " " + cur.weight + "g · " + cur.sg;
+        }
         updatePreview(w);
       });
       items.addEventListener("change", function (e) {
