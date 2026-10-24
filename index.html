@@ -189,7 +189,8 @@ pre.out {
         bottom: hasDeco ? [it.partner + ".K24", "장식" + it.deco] : [it.partner + ".", "K24"]
       };
     }
-    return { top: [it.model, it.sg], bottom: [it.partner + "." + it.price + w.karat, it.weight + "g"] };
+    var sz = (it.size || "").replace(/^#+/, "");
+    return { top: [it.model, it.sg], bottom: [it.partner + "." + it.price + w.karat + (sz ? ".#" + sz : ""), it.weight + "g"] };
   }
 
   function compose(w) {
@@ -246,6 +247,7 @@ pre.out {
       var spr = it.price || "";
       it.price = prev && prev.price !== prev.srcPrice ? prev.price : spr;
       it.srcPrice = spr;
+      it.size = prev ? prev.size || "" : "";
       if (prev) {
         if (prev.weight !== undefined && prev.weight !== prev.srcWeight) it.weight = prev.weight;
         if (prev.deco !== undefined && prev.deco !== prev.srcDeco) it.deco = prev.deco;
@@ -276,7 +278,8 @@ pre.out {
           '<label>장식중량 (비우면 없음)<input data-f="deco" data-i="' + i + '" value="' + esc(it.deco) + '" inputmode="decimal" autocomplete="off"></label>'
         : '<label>거래처<input data-f="partner" data-i="' + i + '" value="' + esc(it.partner) + '" autocomplete="off"></label>' +
           '<label>입고가<input data-f="price" data-i="' + i + '" value="' + esc(it.price) + '" inputmode="decimal" autocomplete="off"></label>' +
-          '<label>중량 g<input data-f="weight" data-i="' + i + '" value="' + esc(it.weight) + '" inputmode="decimal" autocomplete="off"></label>';
+          '<label>중량 g<input data-f="weight" data-i="' + i + '" value="' + esc(it.weight) + '" inputmode="decimal" autocomplete="off"></label>' +
+          '<label>size/color<input data-f="size" data-i="' + i + '" value="' + esc(it.size || "") + '" autocomplete="off"></label>';
       var meta = w.karat === "K24" ? it.sg : w.karat + " " + it.weight + "g · " + it.sg;
       return '<div class="item' + (it.checked ? "" : " off") + '" id="item-' + w.id + '-' + i + '">' +
         '<div class="checks"><input type="checkbox" data-c="' + i + '" ' + (it.checked ? "checked" : "") + ' aria-label="' + esc(it.model) + ' 포함"></div>' +
