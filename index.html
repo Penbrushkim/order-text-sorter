@@ -57,9 +57,9 @@ body {
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
 }
-.wrap { max-width: 1120px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
+.wrap { max-width: 960px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
 h1 { font-family: var(--font-head); font-size: 34px; line-height: 42px; margin: 0; font-weight: 500; letter-spacing: 0; }
-.sub { color: var(--muted); font-size: 14px; line-height: 22px; margin: 4px 0 0; }
+.sub { word-break: keep-all; color: var(--muted); font-size: 14px; line-height: 22px; margin: 4px 0 0; }
 .top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
 .top > div:first-child { min-width: 0; }
 .top-r { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
@@ -149,10 +149,13 @@ pre.out {
   background: var(--inset); color: var(--ink); border-radius: 12px; padding: 18px 20px; min-height: 96px; tab-size: 1; box-shadow: var(--inset-sh);
 }
 .spacer { flex: 1; }
+pre.out[data-empty="1"] { font-family: var(--font-ui); font-size: 14px; color: var(--muted); }
+textarea.src::placeholder { color: var(--muted); opacity: .6; }
 @media (max-width: 576px) {
   body { padding-block: 20px 48px; }
   h1 { font-size: 28px; line-height: 36px; }
-  .top { flex-direction: column; gap: 8px; }
+  .top { flex-direction: column-reverse; gap: 4px; }
+  .top-r { align-self: flex-end; }
   .box { padding: 16px; }
   .panel { gap: 24px; }
   .item { padding: 14px; }
@@ -283,7 +286,7 @@ pre.out {
   function updatePreview(w) {
     var el = document.getElementById("out-" + w.id);
     var txt = compose(w);
-    el.textContent = txt || "체크된 제품이 없습니다.";
+    el.textContent = txt || (state[w.id].text.trim() ? "체크된 제품이 없습니다." : "제품사양표기를 붙여넣으면 미리보기가 여기에 나옵니다.");
     el.dataset.empty = txt ? "" : "1";
   }
   function updateCounts() {
@@ -367,7 +370,7 @@ pre.out {
       p.innerHTML =
         '<div class="box">' +
           '<h2>제품사양표기 <span class="hint">' + (w.karat === "K24" ? "거래처 모델명 / 수공-중량 / [K18 장식별도▷0.12돈]" : "모델명 / 함량 중량g / 수공-중량") + '</span></h2>' +
-          '<textarea class="src" id="src-' + w.id + '" spellcheck="false">' + esc(SAMPLES[w.id]) + '</textarea>' +
+          '<textarea class="src" id="src-' + w.id + '" spellcheck="false" placeholder="' + esc(w.karat === "K24" ? "거래처 모델명\n수공-중량\n[K18 장식별도▷0.12돈]" : "모델명\n" + w.karat + " 중량g\n수공-중량") + '">' + esc(SAMPLES[w.id]) + '</textarea>' +
           '<div class="row-tools"><button class="btn" type="button" data-clear="' + w.id + '">지우기</button><span class="note" id="note-' + w.id + '"></span></div>' +
         '</div>' +
         '<div class="box">' +
