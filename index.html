@@ -204,18 +204,24 @@ textarea.src::placeholder { color: var(--muted); opacity: .6; }
     it.sg = su + "-" + toDon3(g);
   }
 
+  // 함량·중량 줄: 'K18 6.46g' 와 '18K 14.55g' 두 가지 표기를 모두 인식
+  function karatLine(l) {
+    var m = l.match(/^(?:K\s?(14|18|24)|(14|18|24)\s?K)\s*([\d.]+)\s*g?$/i);
+    return m ? { karat: "K" + (m[1] || m[2]), weight: m[3] } : null;
+  }
+
   function parseGold(text, karat) {
     var lines = text.split(/\r?\n/).map(function (l) { return l.trim(); }).filter(Boolean);
     var items = [], skipped = 0;
     for (var i = 0; i < lines.length; i++) {
-      var m = lines[i].match(/^K\s?(14|18|24)\s*([\d.]+)\s*g?$/i);
+      var m = karatLine(lines[i]);
       if (!m || i === 0) continue;
-      if ("K" + m[1] !== karat) { skipped++; continue; }
+      if (m.karat !== karat) { skipped++; continue; }
       var sg = lines[i + 1] && /^\d+\s*-\s*\d+$/.test(lines[i + 1]) ? normSg(lines[i + 1]) : "";
-      var it = { model: lines[i - 1], sg: sg, weight: m[2], partner: "", price: "" };
+      var it = { model: lines[i - 1], sg: sg, weight: m.weight, partner: "", price: "" };
       // 4줄 형식: 첫 줄 = 'B7- 디바스B260 | 디바스' → 앞의 영문/숫자 = 거래처(B7), '|' 바로 앞 숫자 = 입고가(260)
       var h = i >= 2 ? lines[i - 2] : "";
-      if (h && !/^K\s?(14|18|24)\s*[\d.]+\s*g?$/i.test(h) && !/^\d+\s*-\s*\d+$/.test(h)) {
+      if (h && !karatLine(h) && !/^\d+\s*-\s*\d+$/.test(h)) {
         var pm = h.match(/^[A-Z0-9]+/);
         if (pm) it.partner = pm[0];
         var bar = h.indexOf("|");
@@ -231,7 +237,7 @@ textarea.src::placeholder { color: var(--muted); opacity: .6; }
     var items = [];
     for (var i = 1; i < lines.length; i++) {
       if (!/^\d+\s*-\s*\d+$/.test(lines[i])) continue;
-      if (/^K\s?\d+/i.test(lines[i - 1])) continue;
+      if (karatLine(lines[i - 1])) continue;
       var vm = lines[i - 1].match(/^(\S+)\s+/);
       var partner = vm ? (VENDORS[vm[1]] || "") : "";
       var model = lines[i - 1].replace(/^\S+\s+/, "");
