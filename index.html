@@ -172,7 +172,7 @@ textarea.src::placeholder { color: var(--muted); opacity: .6; }
     </div>
     <div class="top-r">
       <button class="btn" type="button" id="themeBtn">다크모드</button>
-      <span class="ver">V1.7</span>
+      <span class="ver">V1.7.1</span>
     </div>
   </div>
   <div class="tabs" role="tablist" id="tabs"></div>
@@ -253,7 +253,8 @@ textarea.src::placeholder { color: var(--muted); opacity: .6; }
     if (it.simple) {
       // 간단 표기: 수공-중량 / 거래처.  (K24는 장식중량이 있으면 '거래처.장식0.13')
       var dc = w.karat === "K24" && it.deco !== "" ? "장식" + it.deco : "";
-      return { top: [it.sg, ""], bottom: [it.partner + "." + dc, ""] };
+      // K24 간단 + 장식 없음 → 점 없이 거래처만 (예: GM)
+      return { top: [it.sg, ""], bottom: [w.karat === "K24" && !dc ? it.partner : it.partner + "." + dc, ""] };
     }
     if (w.karat === "K24") {
       var hasDeco = it.deco !== "";
