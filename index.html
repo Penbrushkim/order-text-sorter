@@ -172,7 +172,7 @@ textarea.src::placeholder { color: var(--muted); opacity: .6; }
     </div>
     <div class="top-r">
       <button class="btn" type="button" id="themeBtn">다크모드</button>
-      <span class="ver">V1.6</span>
+      <span class="ver">V1.7</span>
     </div>
   </div>
   <div class="tabs" role="tablist" id="tabs"></div>
@@ -187,7 +187,7 @@ textarea.src::placeholder { color: var(--muted); opacity: .6; }
     { id: "K18", label: "K18", karat: "K18" },
     { id: "K14", label: "K14", karat: "K14" }
   ];
-  var VENDORS = { "크라이스": "A67", "레이나": "A45", "예랑": "YR" };
+  var VENDORS = { "크라이스": "A67", "레이나": "A45", "예랑": "YR", "금마니": "GM" };
   var GAP = "   ";
   var state = {};
 
@@ -250,7 +250,11 @@ textarea.src::placeholder { color: var(--muted); opacity: .6; }
   }
 
   function cells(w, it) {
-    if (it.simple) return { top: [it.sg, ""], bottom: [it.partner + ".", ""] };
+    if (it.simple) {
+      // 간단 표기: 수공-중량 / 거래처.  (K24는 장식중량이 있으면 '거래처.장식0.13')
+      var dc = w.karat === "K24" && it.deco !== "" ? "장식" + it.deco : "";
+      return { top: [it.sg, ""], bottom: [it.partner + "." + dc, ""] };
+    }
     if (w.karat === "K24") {
       var hasDeco = it.deco !== "";
       var szv = (it.size || "").replace(/^#+/, ""), szTag = szv ? ".#" + szv : "";
